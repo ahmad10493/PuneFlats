@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Arman's Home Property</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+<div class="login-container">
+    <form class="login-form" onsubmit="login(event)">
+        <h2>Arman's Home Property</h2>
+        <p>Welcome back! Please login to your account.</p>
+        
+        <div class="input-group">
+            <input id="u" type="text" placeholder="Username" required>
+        </div>
+        
+        <div class="input-group">
+            <input id="p" type="password" placeholder="Password" required>
+        </div>
+        
+        <button type="submit">Login</button>
+    </form>
+</div>
+
+<script>
+function login(e){
+    e.preventDefault();
+    // Using getElementById is more reliable than shorthand IDs
+    const user = document.getElementById("u").value;
+    const pass = document.getElementById("p").value;
+
+    if(user === "admin" && pass === "1234"){
+        localStorage.setItem("admin", "yes");
+        window.location.href = "admin.html";
+    } else {
+        alert("Invalid credentials. Please try again.");
+    }
+}
+</script>
+
+</body>
+</html>

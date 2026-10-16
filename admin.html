@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arman Homes - Admin Panel</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="box">
+
+  <h2 id="formTitle">Add New Property</h2>
+
+  <div id="stats" style="display:flex;gap:10px;margin-bottom:20px;">
+    <div class="card">Total: <b id="t">0</b></div>
+    <div class="card">Rent: <b id="r">0</b></div>
+    <div class="card">Sale: <b id="s">0</b></div>
+    <div class="card">Featured: <b id="f">0</b></div>
+  </div>
+
+  <div style="display:flex;gap:10px;margin-bottom:20px;">
+    <button type="button" onclick="downloadList('rent')">⬇ Download Rent List</button>
+    <button type="button" onclick="downloadList('sale')">⬇ Download Sale List</button>
+  </div>
+
+  <form id="propertyForm" enctype="multipart/form-data">
+
+    <input type="hidden" id="editId">
+    
+    <label for="bhk">BHK</label>
+    <select name="bhk" id="bhk" required>
+      <option value="">Select BHK</option>
+      <option value="1 BHK">1 BHK</option>
+      <option value="2 BHK">2 BHK</option>
+      <option value="3 BHK">3 BHK</option>
+    </select>
+    
+    <label for="purpose">Purpose</label>
+    <select name="purpose" id="purpose" required>
+      <option value="">Purpose</option>
+      <option value="rent">Rent</option>
+      <option value="sale">Sale</option>
+    </select>
+
+    <label for="price">Price (Numeric)</label>
+    <input name="price" id="price" type="number" placeholder="e.g. 4500000" required>
+
+    <label for="priceText">Price Display</label>
+    <input name="priceText" id="priceText" placeholder="e.g. ₹45 Lacs or ₹25,000/mo" required>
+
+    <label for="area">Area / Location</label>
+    <input name="area" id="area" placeholder="e.g. Hinjewadi Phase 1" required>
+
+    <label for="details">Property Details</label>
+    <textarea name="details" id="details" placeholder="Enter detailed description..." required></textarea>
+
+    <label for="images">Upload Images (max 5)</label>
+    <input type="file" name="images" accept="image/*" multiple id="images">
+
+    <button type="submit" id="saveBtn">Add Property</button>
+  </form>
+
+  <p id="msg"></p>
+
+  <hr>
+
+  <h2>All Properties</h2>
+  <div id="adminList"></div>
+
+</div>
+
+<script>
+const form = document.getElementById("propertyForm");
+const msg = document.getElementById("msg");
+const adminList = document.getElementById("adminList");
+
+const API_BASE = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "http://localhost:5001"
+  : "";
+
+let editingId = "";
+
+/* ---------------- LOAD ALL ---------------- */
+
+async function loadAdminProperties(){
+  try {
+    const res = await fetch(`${API_BASE}/properties?t=${Date.now()}`);
+    const data = await res.json();
+
+    adminList.innerHTML = "";
+
+    data.forEach(p => {
+      const imgPath = (p.images && p.images.length > 0) ? p.images[0] : "/images/placeholder.jpg";
+      
+      adminList.innerHTML += `
+        <div class="card">
+          <img src="${API_BASE}${imgPath}?t=${Date.now()}" alt="${p.bhk} Image">
+          <b>${p.bhk} - ${p.area}</b>
+          <p>${p.priceText} | ${p.purpose.toUpperCase()}</p>
+
+          <div class="row">
+            <button type="button" onclick="editProperty('${p._id}')">Edit</button>
+            <button type="button" onclick="toggleFeatured('${p._id}')">${p.featured ? "Unfeature" : "Feature"}</button>
+            <button type="button" class="danger" onclick="deleteProperty('${p._id}')">Delete</button>
+          </div>
+        </div>
+      `;
+    });
+  } catch (err) {
+    console.error("Failed to load properties:", err);
+  }
+}
+
+/* ---------------- ADD / UPDATE ---------------- */
+
+form.onsubmit = async (e) => {
+  e.preventDefault();
+  msg.innerText = "Saving...";
+
+  try {
+    const data = new FormData(form);
+
+    let url = `${API_BASE}/add-property`;
+    let method = "POST";
+
+    if (editingId) {
+      url = `${API_BASE}/property/${editingId}`;
+      method = "PUT";
+    }
+
+    const res = await fetch(url, { method, body: data });
+    const r = await res.json();
+
+    msg.innerText = r.message || "Saved successfully";
+
+    form.reset();
+    editingId = "";
+    document.getElementById("editId").value = "";
+    document.getElementById("formTitle").innerText = "Add New Property";
+    document.getElementById("saveBtn").innerText = "Add Property";
+
+    await loadAdminProperties();
+    await loadStats();
+
+  } catch (err) {
+    console.error(err);
+    msg.innerText = "Server error while saving";
+  }
+};
+
+/* ---------------- EDIT ---------------- */
+
+async function editProperty(id){
+  try {
+    const res = await fetch(`${API_BASE}/property/${id}`);
+    const p = await res.json();
+
+    editingId = p._id;
+    document.getElementById("editId").value = p._id;
+
+    document.getElementById("bhk").value = p.bhk;
+    document.getElementById("purpose").value = p.purpose;
+    document.getElementById("price").value = p.price;
+    document.getElementById("priceText").value = p.priceText;
+    document.getElementById("area").value = p.area;
+    document.getElementById("details").value = p.details;
+
+    document.getElementById("formTitle").innerText = "Edit Property";
+    document.getElementById("saveBtn").innerText = "Update Property";
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch (err) {
+    console.error("Error fetching property for edit:", err);
+  }
+}
+
+/* ---------------- DELETE ---------------- */
+
+async function deleteProperty(id){
+  if(!confirm("Delete this property?")) return;
+
+  const res = await fetch(`${API_BASE}/property/${id}`, { method: "DELETE" });
+  const r = await res.json();
+  alert(r.message);
+
+  loadAdminProperties();
+  loadStats();
+}
+
+/* ---------------- TOGGLE FEATURED ---------------- */
+
+async function toggleFeatured(id){
+  await fetch(`${API_BASE}/property-featured/${id}`, { method: "PUT" });
+  loadAdminProperties();
+  loadStats();
+}
+
+/* ---------------- DASHBOARD STATS ---------------- */
+
+async function loadStats(){
+  try {
+    const res = await fetch(`${API_BASE}/dashboard?t=${Date.now()}`);
+    const d = await res.json();
+
+    document.getElementById("t").innerText = d.total || 0;
+    document.getElementById("r").innerText = d.rent || 0;
+    document.getElementById("s").innerText = d.sale || 0;
+    document.getElementById("f").innerText = d.featured || 0;
+  } catch (err) {
+    console.error("Error loading stats:", err);
+  }
+}
+
+function downloadList(type){
+  window.open(`${API_BASE}/download/${type}`);
+}
+
+if (localStorage.getItem("admin") !== "yes") {
+  location.href = "login.html";
+}
+
+/* ---------------- INIT ---------------- */
+
+loadAdminProperties();
+loadStats();
+</script>
+
+</body>
+</html>

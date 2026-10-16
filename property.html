@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Details - Arman Homes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>Property Details</h1>
+</header>
+
+<main id="details" class="card" style="max-width:600px;margin:20px auto;"></main>
+
+<script>
+const id = new URLSearchParams(window.location.search).get("id");
+let property;
+let imgIndex = 0;
+
+const API_BASE = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "http://localhost:5001"
+  : "";
+
+async function loadProperty(){
+  if (!id) {
+    document.getElementById("details").innerHTML = "<p style='text-align:center;'>No property specified.</p>";
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/property/${id}?t=${Date.now()}`);
+    if (!res.ok) throw new Error("Property not found");
+
+    property = await res.json();
+
+    const div = document.getElementById("details");
+    const hasMultipleImages = property.images && property.images.length > 1;
+    const firstImg = (property.images && property.images.length > 0) ? property.images[0] : "/images/placeholder.jpg";
+
+    div.innerHTML = `
+      <img id="slider" src="${API_BASE}${firstImg}" alt="${property.bhk} in ${property.area}" class="detail-img">
+
+      ${hasMultipleImages ? `
+        <div style="text-align:center; margin:10px;">
+          <button type="button" onclick="prev()">⬅ Prev</button>
+          <button type="button" onclick="next()">Next ➡</button>
+        </div>
+      ` : ''}
+
+      <h2>${property.bhk} - ${property.area}</h2>
+      <p><b>${property.purpose ? property.purpose.toUpperCase() : ''}</b></p>
+      <p><b>Price:</b> ${property.priceText}</p>
+      <p>${property.details || ''}</p>
+
+      <form onsubmit="sendLead(event)">
+        <label for="name">Your Name</label>
+        <input id="name" placeholder="Your Name" required style="width:100%;padding:8px;margin:5px 0;">
+
+        <label for="phone">Mobile Number</label>
+        <input id="phone" type="tel" placeholder="Mobile Number" required style="width:100%;padding:8px;margin:5px 0;">
+
+        <button type="submit">Send Enquiry</button>
+      </form>
+
+      <div style="margin-top:15px; display:flex; gap:10px; flex-direction:column;">
+        <button type="button" onclick="contact()" style="background:#25D366; color:white;">WhatsApp</button>
+        <a href="tel:919717246466" style="text-decoration:none;">
+          <button type="button" style="background:#0a7cff; color:white; width:100%;">Call Now</button>
+        </a>
+      </div>
+    `;
+  } catch (err) {
+    console.error(err);
+    document.getElementById("details").innerHTML = "<p style='text-align:center;'>Error loading property details.</p>";
+  }
+}
+
+function sendLead(e){
+  e.preventDefault();
+
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+
+  const msgText = `*New Lead from Arman Homes Website:*\n\n` +
+                  `👤 *Name:* ${name}\n` +
+                  `📞 *Phone:* ${phone}\n` +
+                  `🏠 *Property:* ${property.bhk} - ${property.area}\n` +
+                  `💰 *Price:* ${property.priceText}\n` +
+                  `📌 *Type:* ${property.purpose.toUpperCase()}`;
+
+  window.open(`https://wa.me/919717246466?text=${encodeURIComponent(msgText)}`, "_blank");
+}
+
+function next(){
+  if (!property || !property.images || property.images.length === 0) return;
+  imgIndex = (imgIndex + 1) % property.images.length;
+  document.getElementById("slider").src = `${API_BASE}${property.images[imgIndex]}`;
+}
+
+function prev(){
+  if (!property || !property.images || property.images.length === 0) return;
+  imgIndex = (imgIndex - 1 + property.images.length) % property.images.length;
+  document.getElementById("slider").src = `${API_BASE}${property.images[imgIndex]}`;
+}
+
+function contact(){
+  if (!property) return;
+
+  const msgText = `Hey Arman Homes, I'm interested in this property details:\n\n` +
+                  `🏠 *Property:* ${property.bhk} - ${property.area}\n` +
+                  `💰 *Price:* ${property.priceText}\n` +
+                  `📌 *Type:* ${property.purpose.toUpperCase()}\n\n` +
+                  `Please share complete details.`;
+
+  const url = `https://wa.me/919717246466?text=${encodeURIComponent(msgText)}`;
+  window.open(url, "_blank");
+}
+
+loadProperty();
+</script>
+
+</body>
+</html>

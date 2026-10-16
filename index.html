@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arman Homes Pune</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="main-header">
+  <div class="header-container">
+    
+    <!-- Branding & SVG Logo -->
+    <div class="brand-section">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 10.5L12 3L21 10.5V20C21 20.5523 20.5523 21 20 21H15V14H9V21H4C3.44772 21 3 20.5523 3 20V10.5Z" fill="#3B82F6" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Arman Homes Pune</h1>
+        <p class="tagline">1 BHK, 2 BHK & 3 BHK Flats for Rent & Sale in Pune</p>
+      </div>
+    </div>
+
+    <!-- Contact Info & Office Address -->
+    <div class="contact-info">
+      <div class="info-item">
+        <span class="icon">📍</span>
+        <span class="text">Shop No 151, First Floor, Sector R10, Life Republic, Marunji Road, Pune 411033</span>
+      </div>
+      <div class="info-item">
+        <span class="icon">📞</span>
+        <a href="tel:+919354210824" class="phone-link">+91 93542 10824</a>
+      </div>
+    </div>
+
+    <!-- Admin Login Button -->
+    <div class="admin-action">
+      <a href="login.html" class="btn-admin">Login Admin</a>
+    </div>
+
+  </div>
+</header>
+
+<h2 style="text-align:center;">⭐ Featured Properties</h2>
+<div id="featured" class="grid"></div>
+<div id="featuredRow" class="featured-row"></div>
+
+<hr>
+
+<h2 style="text-align:center;">All Listings</h2>
+
+<div class="filters">
+  <label for="bhk">BHK</label>
+  <select id="bhk">
+    <option value="all">All BHK</option>
+    <option value="1 BHK">1 BHK</option>
+    <option value="2 BHK">2 BHK</option>
+    <option value="3 BHK">3 BHK</option>
+  </select>
+
+  <label for="purpose">Purpose</label>
+  <select id="purpose">
+    <option value="all">Rent & Sale</option>
+    <option value="rent">Rent</option>
+    <option value="sale">Sale</option>
+  </select>
+
+  <label for="area">Area</label>
+  <select id="area">
+    <option value="all">All Areas</option>
+    <option value="Wakad">Wakad</option>
+    <option value="Hinjewadi">Hinjewadi</option>
+    <option value="Kharadi">Kharadi</option>
+  </select>
+
+  <label for="budget">Budget</label>
+  <select id="budget">
+    <option value="all">Any Budget</option>
+    <option value="18000">Below 18k</option>
+    <option value="30000">Below 30k</option>
+    <option value="5000000">Below 50 Lakhs</option>
+  </select>
+
+  <button type="button" onclick="applyFilter()">Search</button>
+</div>
+
+<div id="listings" class="grid"></div>
+
+<h2 style="text-align:center;">Latest Properties</h2>
+<div id="propertyList" class="property-grid"></div>
+
+<script src="script.js"></script>
+
+</body>
+</html>

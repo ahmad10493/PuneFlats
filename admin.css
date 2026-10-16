@@ -1,0 +1,143 @@
+body{
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  min-height:100vh;
+  padding:30px;
+}
+
+.box{
+  background:#ffffff;
+  max-width:850px;
+  margin:auto;
+  border-radius:16px;
+  padding:25px;
+  box-shadow:0 20px 40px rgba(0,0,0,.25);
+}
+
+h2{
+  margin-top:0;
+  color:#1f2937;
+}
+
+/* ===== DASHBOARD ===== */
+
+#stats{
+  display:grid;
+  grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+  gap:15px;
+  margin-bottom:25px;
+}
+
+#stats .card{
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  color:white;
+  padding:18px;
+  border-radius:14px;
+  text-align:center;
+  box-shadow:0 10px 20px rgba(0,0,0,.25);
+}
+
+#stats b{
+  display:block;
+  font-size:24px;
+  margin-top:6px;
+}
+
+/* ===== FORM ===== */
+
+form{
+  background:#f9fafb;
+  padding:18px;
+  border-radius:14px;
+  border:1px solid #e5e7eb;
+}
+
+input,select,textarea{
+  width:100%;
+  padding:11px;
+  border-radius:8px;
+  border:1px solid #d1d5db;
+  font-size:14px;
+}
+
+input:focus,select:focus,textarea:focus{
+  outline:none;
+  border-color:#6366f1;
+}
+
+button{
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  font-size:15px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+#saveBtn{
+  background:#4f46e5;
+  color:white;
+  margin-top:10px;
+}
+
+#saveBtn:hover{ background:#4338ca; }
+
+/* ===== PROPERTY CARDS ===== */
+
+#adminList{
+  margin-top:20px;
+  display:grid;
+  grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+  gap:15px;
+}
+
+.card{
+  background:white;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 8px 18px rgba(0,0,0,.15);
+}
+
+.card img{
+  width:100%;
+  height:150px;
+  object-fit:cover;
+}
+
+.card b{
+  display:block;
+  padding:8px 10px 0;
+}
+
+.card p{
+  padding:0 10px;
+  color:#6b7280;
+  font-size:13px;
+}
+
+/* ===== ACTION BUTTONS ===== */
+
+.row{
+  display:flex;
+  gap:6px;
+  padding:10px;
+}
+
+.row button{
+  flex:1;
+  font-size:13px;
+}
+
+.row button:nth-child(1){ background:#10b981; color:white; }
+.row button:nth-child(2){ background:#f59e0b; color:white; }
+.row button:nth-child(3){ background:#ef4444; color:white; }
+
+.row button:hover{ opacity:.85; }
+
+/* ===== MESSAGE ===== */
+
+#msg{
+  text-align:center;
+  margin-top:8px;
+  font-weight:bold;
+}
